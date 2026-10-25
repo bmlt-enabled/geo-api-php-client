@@ -1,0 +1,201 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Geo API",
+        "description": "Cached geocoding and timezone lookups for BMLT-enabled applications. Every endpoint requires an API key (Settings → API Keys) sent as a Bearer token.",
+        "contact": {
+            "email": "admin@bmlt.app"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "https://geo.aws.bmlt.app",
+            "description": "Production"
+        }
+    ],
+    "paths": {
+        "/api/geocode": {
+            "get": {
+                "tags": [
+                    "Geocoding"
+                ],
+                "summary": "Geocode an address or place",
+                "description": "Returns the Google Maps Geocoding response (served from the shared cache when available) plus `type` (\"cache\" or \"live\") and a `request` echo.",
+                "operationId": "geocode",
+                "parameters": [
+                    {
+                        "name": "application",
+                        "in": "query",
+                        "description": "Your application identifier (used for analytics).",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Address or place to geocode.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "referrer",
+                        "in": "query",
+                        "description": "URL of the requesting page (region detection + analytics).",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uri"
+                        }
+                    },
+                    {
+                        "name": "language",
+                        "in": "query",
+                        "description": "BCP-47 language code (default: en).",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "north",
+                        "in": "query",
+                        "description": "Viewport north bound (decimal degrees).",
+                        "required": false,
+                        "schema": {
+                            "type": "number",
+                            "format": "float"
+                        }
+                    },
+                    {
+                        "name": "south",
+                        "in": "query",
+                        "description": "Viewport south bound (decimal degrees).",
+                        "required": false,
+                        "schema": {
+                            "type": "number",
+                            "format": "float"
+                        }
+                    },
+                    {
+                        "name": "east",
+                        "in": "query",
+                        "description": "Viewport east bound (decimal degrees).",
+                        "required": false,
+                        "schema": {
+                            "type": "number",
+                            "format": "float"
+                        }
+                    },
+                    {
+                        "name": "west",
+                        "in": "query",
+                        "description": "Viewport west bound (decimal degrees).",
+                        "required": false,
+                        "schema": {
+                            "type": "number",
+                            "format": "float"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Geocoding result (cache or live)."
+                    },
+                    "401": {
+                        "description": "Missing or invalid API key."
+                    },
+                    "403": {
+                        "description": "Account not yet approved."
+                    },
+                    "422": {
+                        "description": "Validation error (missing required parameters)."
+                    },
+                    "429": {
+                        "description": "Rate limit exceeded — see Retry-After header."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/timezone": {
+            "get": {
+                "tags": [
+                    "Timezone"
+                ],
+                "summary": "Look up the timezone for a location",
+                "description": "Provide either `address` (geocoded first) or `location` as \"latitude,longitude\" — the two are mutually exclusive. Returns dstOffset, rawOffset, timeZoneId and timeZoneName.",
+                "operationId": "timezone",
+                "parameters": [
+                    {
+                        "name": "address",
+                        "in": "query",
+                        "description": "Address to geocode and look up. Mutually exclusive with location.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "location",
+                        "in": "query",
+                        "description": "Comma-separated latitude,longitude (e.g. 39.60,-119.68). Mutually exclusive with address.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Timezone result (dstOffset, rawOffset, timeZoneId, timeZoneName)."
+                    },
+                    "401": {
+                        "description": "Missing or invalid API key."
+                    },
+                    "403": {
+                        "description": "Account not yet approved."
+                    },
+                    "422": {
+                        "description": "Validation error (both/neither parameter, or bad location format)."
+                    },
+                    "500": {
+                        "description": "Upstream Google Timezone API error."
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "description": "API key from Settings → API Keys. Send as: Authorization: Bearer geo_...",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Geocoding",
+            "description": "Geocoding"
+        },
+        {
+            "name": "Timezone",
+            "description": "Timezone"
+        }
+    ]
+}
