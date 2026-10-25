@@ -135,6 +135,7 @@ class GeocodingApi
      * @param  string $search Address or place to geocode. (required)
      * @param  string $referrer URL of the requesting page (region detection + analytics). (required)
      * @param  string|null $language BCP-47 language code (default: en). (optional)
+     * @param  string|null $region Region bias as a ccTLD (e.g. \&quot;fr\&quot;, \&quot;ca\&quot;). Overrides the region inferred from the referrer domain — useful when the referrer has no country TLD. (optional)
      * @param  float|null $north Viewport north bound (decimal degrees). (optional)
      * @param  float|null $south Viewport south bound (decimal degrees). (optional)
      * @param  float|null $east Viewport east bound (decimal degrees). (optional)
@@ -145,9 +146,9 @@ class GeocodingApi
      * @throws \InvalidArgumentException
      * @return void
      */
-    public function geocode($application, $search, $referrer, $language = null, $north = null, $south = null, $east = null, $west = null, string $contentType = self::contentTypes['geocode'][0])
+    public function geocode($application, $search, $referrer, $language = null, $region = null, $north = null, $south = null, $east = null, $west = null, string $contentType = self::contentTypes['geocode'][0])
     {
-        $this->geocodeWithHttpInfo($application, $search, $referrer, $language, $north, $south, $east, $west, $contentType);
+        $this->geocodeWithHttpInfo($application, $search, $referrer, $language, $region, $north, $south, $east, $west, $contentType);
     }
 
     /**
@@ -159,6 +160,7 @@ class GeocodingApi
      * @param  string $search Address or place to geocode. (required)
      * @param  string $referrer URL of the requesting page (region detection + analytics). (required)
      * @param  string|null $language BCP-47 language code (default: en). (optional)
+     * @param  string|null $region Region bias as a ccTLD (e.g. \&quot;fr\&quot;, \&quot;ca\&quot;). Overrides the region inferred from the referrer domain — useful when the referrer has no country TLD. (optional)
      * @param  float|null $north Viewport north bound (decimal degrees). (optional)
      * @param  float|null $south Viewport south bound (decimal degrees). (optional)
      * @param  float|null $east Viewport east bound (decimal degrees). (optional)
@@ -169,9 +171,9 @@ class GeocodingApi
      * @throws \InvalidArgumentException
      * @return array of null, HTTP status code, HTTP response headers (array of strings)
      */
-    public function geocodeWithHttpInfo($application, $search, $referrer, $language = null, $north = null, $south = null, $east = null, $west = null, string $contentType = self::contentTypes['geocode'][0])
+    public function geocodeWithHttpInfo($application, $search, $referrer, $language = null, $region = null, $north = null, $south = null, $east = null, $west = null, string $contentType = self::contentTypes['geocode'][0])
     {
-        $request = $this->geocodeRequest($application, $search, $referrer, $language, $north, $south, $east, $west, $contentType);
+        $request = $this->geocodeRequest($application, $search, $referrer, $language, $region, $north, $south, $east, $west, $contentType);
 
         try {
             $options = $this->createHttpClientOption();
@@ -215,6 +217,7 @@ class GeocodingApi
      * @param  string $search Address or place to geocode. (required)
      * @param  string $referrer URL of the requesting page (region detection + analytics). (required)
      * @param  string|null $language BCP-47 language code (default: en). (optional)
+     * @param  string|null $region Region bias as a ccTLD (e.g. \&quot;fr\&quot;, \&quot;ca\&quot;). Overrides the region inferred from the referrer domain — useful when the referrer has no country TLD. (optional)
      * @param  float|null $north Viewport north bound (decimal degrees). (optional)
      * @param  float|null $south Viewport south bound (decimal degrees). (optional)
      * @param  float|null $east Viewport east bound (decimal degrees). (optional)
@@ -224,9 +227,9 @@ class GeocodingApi
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function geocodeAsync($application, $search, $referrer, $language = null, $north = null, $south = null, $east = null, $west = null, string $contentType = self::contentTypes['geocode'][0])
+    public function geocodeAsync($application, $search, $referrer, $language = null, $region = null, $north = null, $south = null, $east = null, $west = null, string $contentType = self::contentTypes['geocode'][0])
     {
-        return $this->geocodeAsyncWithHttpInfo($application, $search, $referrer, $language, $north, $south, $east, $west, $contentType)
+        return $this->geocodeAsyncWithHttpInfo($application, $search, $referrer, $language, $region, $north, $south, $east, $west, $contentType)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -243,6 +246,7 @@ class GeocodingApi
      * @param  string $search Address or place to geocode. (required)
      * @param  string $referrer URL of the requesting page (region detection + analytics). (required)
      * @param  string|null $language BCP-47 language code (default: en). (optional)
+     * @param  string|null $region Region bias as a ccTLD (e.g. \&quot;fr\&quot;, \&quot;ca\&quot;). Overrides the region inferred from the referrer domain — useful when the referrer has no country TLD. (optional)
      * @param  float|null $north Viewport north bound (decimal degrees). (optional)
      * @param  float|null $south Viewport south bound (decimal degrees). (optional)
      * @param  float|null $east Viewport east bound (decimal degrees). (optional)
@@ -252,10 +256,10 @@ class GeocodingApi
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function geocodeAsyncWithHttpInfo($application, $search, $referrer, $language = null, $north = null, $south = null, $east = null, $west = null, string $contentType = self::contentTypes['geocode'][0])
+    public function geocodeAsyncWithHttpInfo($application, $search, $referrer, $language = null, $region = null, $north = null, $south = null, $east = null, $west = null, string $contentType = self::contentTypes['geocode'][0])
     {
         $returnType = '';
-        $request = $this->geocodeRequest($application, $search, $referrer, $language, $north, $south, $east, $west, $contentType);
+        $request = $this->geocodeRequest($application, $search, $referrer, $language, $region, $north, $south, $east, $west, $contentType);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -287,6 +291,7 @@ class GeocodingApi
      * @param  string $search Address or place to geocode. (required)
      * @param  string $referrer URL of the requesting page (region detection + analytics). (required)
      * @param  string|null $language BCP-47 language code (default: en). (optional)
+     * @param  string|null $region Region bias as a ccTLD (e.g. \&quot;fr\&quot;, \&quot;ca\&quot;). Overrides the region inferred from the referrer domain — useful when the referrer has no country TLD. (optional)
      * @param  float|null $north Viewport north bound (decimal degrees). (optional)
      * @param  float|null $south Viewport south bound (decimal degrees). (optional)
      * @param  float|null $east Viewport east bound (decimal degrees). (optional)
@@ -296,7 +301,7 @@ class GeocodingApi
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    public function geocodeRequest($application, $search, $referrer, $language = null, $north = null, $south = null, $east = null, $west = null, string $contentType = self::contentTypes['geocode'][0])
+    public function geocodeRequest($application, $search, $referrer, $language = null, $region = null, $north = null, $south = null, $east = null, $west = null, string $contentType = self::contentTypes['geocode'][0])
     {
 
         // verify the required parameter 'application' is set
@@ -319,6 +324,7 @@ class GeocodingApi
                 'Missing the required parameter $referrer when calling geocode'
             );
         }
+
 
 
 
@@ -364,6 +370,15 @@ class GeocodingApi
         $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
             $language,
             'language', // param base name
+            'string', // openApiType
+            'form', // style
+            true, // explode
+            false // required
+        ) ?? []);
+        // query params
+        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
+            $region,
+            'region', // param base name
             'string', // openApiType
             'form', // style
             true, // explode

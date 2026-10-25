@@ -62,6 +62,15 @@
                         }
                     },
                     {
+                        "name": "region",
+                        "in": "query",
+                        "description": "Region bias as a ccTLD (e.g. \"fr\", \"ca\"). Overrides the region inferred from the referrer domain — useful when the referrer has no country TLD.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
                         "name": "north",
                         "in": "query",
                         "description": "Viewport north bound (decimal degrees).",
@@ -117,6 +126,15 @@
                     },
                     "429": {
                         "description": "Rate limit exceeded — see Retry-After header."
+                    },
+                    "502": {
+                        "description": "Upstream geocoding service returned an invalid or error response."
+                    },
+                    "503": {
+                        "description": "Upstream geocoding quota exceeded — see Retry-After header."
+                    },
+                    "504": {
+                        "description": "Upstream geocoding service did not respond in time."
                     }
                 },
                 "security": [
@@ -165,10 +183,16 @@
                         "description": "Account not yet approved."
                     },
                     "422": {
-                        "description": "Validation error (both/neither parameter, or bad location format)."
+                        "description": "Validation error (both/neither parameter, bad location format, or no timezone data for the location)."
                     },
-                    "500": {
-                        "description": "Upstream Google Timezone API error."
+                    "502": {
+                        "description": "Upstream Google Timezone/Geocoding service returned an invalid or error response."
+                    },
+                    "503": {
+                        "description": "Upstream quota exceeded — see Retry-After header."
+                    },
+                    "504": {
+                        "description": "Upstream service did not respond in time."
                     }
                 },
                 "security": [

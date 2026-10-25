@@ -12,7 +12,7 @@ All URIs are relative to https://geo.aws.bmlt.app, except if the operation defin
 ## `geocode()`
 
 ```php
-geocode($application, $search, $referrer, $language, $north, $south, $east, $west)
+geocode($application, $search, $referrer, $language, $region, $north, $south, $east, $west)
 ```
 
 Geocode an address or place
@@ -40,13 +40,14 @@ $application = 'application_example'; // string | Your application identifier (u
 $search = 'search_example'; // string | Address or place to geocode.
 $referrer = 'referrer_example'; // string | URL of the requesting page (region detection + analytics).
 $language = 'language_example'; // string | BCP-47 language code (default: en).
+$region = 'region_example'; // string | Region bias as a ccTLD (e.g. \"fr\", \"ca\"). Overrides the region inferred from the referrer domain — useful when the referrer has no country TLD.
 $north = 3.4; // float | Viewport north bound (decimal degrees).
 $south = 3.4; // float | Viewport south bound (decimal degrees).
 $east = 3.4; // float | Viewport east bound (decimal degrees).
 $west = 3.4; // float | Viewport west bound (decimal degrees).
 
 try {
-    $apiInstance->geocode($application, $search, $referrer, $language, $north, $south, $east, $west);
+    $apiInstance->geocode($application, $search, $referrer, $language, $region, $north, $south, $east, $west);
 } catch (Exception $e) {
     echo 'Exception when calling GeocodingApi->geocode: ', $e->getMessage(), PHP_EOL;
 }
@@ -60,6 +61,7 @@ try {
 | **search** | **string**| Address or place to geocode. | |
 | **referrer** | **string**| URL of the requesting page (region detection + analytics). | |
 | **language** | **string**| BCP-47 language code (default: en). | [optional] |
+| **region** | **string**| Region bias as a ccTLD (e.g. \&quot;fr\&quot;, \&quot;ca\&quot;). Overrides the region inferred from the referrer domain — useful when the referrer has no country TLD. | [optional] |
 | **north** | **float**| Viewport north bound (decimal degrees). | [optional] |
 | **south** | **float**| Viewport south bound (decimal degrees). | [optional] |
 | **east** | **float**| Viewport east bound (decimal degrees). | [optional] |

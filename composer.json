@@ -1,6 +1,6 @@
 {
     "name": "bmlt-enabled/geo-api-php-client",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Cached geocoding and timezone lookups for BMLT-enabled applications. Every endpoint requires an API key (Settings → API Keys) sent as a Bearer token.",
     "keywords": [
         "openapitools",
