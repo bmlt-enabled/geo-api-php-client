@@ -144,11 +144,12 @@ class GeocodingApi
      *
      * @throws \OpenAPI\Client\ApiException on non-2xx response or if the response body is not in the expected format
      * @throws \InvalidArgumentException
-     * @return void
+     * @return \OpenAPI\Client\Model\Geocode200Response
      */
     public function geocode($application, $search, $referrer, $language = null, $region = null, $north = null, $south = null, $east = null, $west = null, string $contentType = self::contentTypes['geocode'][0])
     {
-        $this->geocodeWithHttpInfo($application, $search, $referrer, $language, $region, $north, $south, $east, $west, $contentType);
+        list($response) = $this->geocodeWithHttpInfo($application, $search, $referrer, $language, $region, $north, $south, $east, $west, $contentType);
+        return $response;
     }
 
     /**
@@ -169,7 +170,7 @@ class GeocodingApi
      *
      * @throws \OpenAPI\Client\ApiException on non-2xx response or if the response body is not in the expected format
      * @throws \InvalidArgumentException
-     * @return array of null, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \OpenAPI\Client\Model\Geocode200Response, HTTP status code, HTTP response headers (array of strings)
      */
     public function geocodeWithHttpInfo($application, $search, $referrer, $language = null, $region = null, $north = null, $south = null, $east = null, $west = null, string $contentType = self::contentTypes['geocode'][0])
     {
@@ -198,9 +199,45 @@ class GeocodingApi
             $statusCode = $response->getStatusCode();
 
 
-            return [null, $statusCode, $response->getHeaders()];
+            switch($statusCode) {
+                case 200:
+                    return $this->handleResponseWithDataType(
+                        '\OpenAPI\Client\Model\Geocode200Response',
+                        $request,
+                        $response,
+                    );
+            }
+
+            
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        (string) $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    (string) $response->getBody()
+                );
+            }
+
+            return $this->handleResponseWithDataType(
+                '\OpenAPI\Client\Model\Geocode200Response',
+                $request,
+                $response,
+            );
         } catch (ApiException $e) {
             switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\OpenAPI\Client\Model\Geocode200Response',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
             }
         
 
@@ -258,14 +295,27 @@ class GeocodingApi
      */
     public function geocodeAsyncWithHttpInfo($application, $search, $referrer, $language = null, $region = null, $north = null, $south = null, $east = null, $west = null, string $contentType = self::contentTypes['geocode'][0])
     {
-        $returnType = '';
+        $returnType = '\OpenAPI\Client\Model\Geocode200Response';
         $request = $this->geocodeRequest($application, $search, $referrer, $language, $region, $north, $south, $east, $west, $contentType);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
             ->then(
                 function ($response) use ($returnType) {
-                    return [null, $response->getStatusCode(), $response->getHeaders()];
+                    if ($returnType === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ($returnType !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
                 },
                 function ($exception) {
                     $response = $exception->getResponse();
@@ -425,7 +475,7 @@ class GeocodingApi
 
 
         $headers = $this->headerSelector->selectHeaders(
-            [],
+            ['application/json', ],
             $contentType,
             $multipart
         );

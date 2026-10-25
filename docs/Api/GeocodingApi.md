@@ -12,7 +12,7 @@ All URIs are relative to https://geo.aws.bmlt.app, except if the operation defin
 ## `geocode()`
 
 ```php
-geocode($application, $search, $referrer, $language, $region, $north, $south, $east, $west)
+geocode($application, $search, $referrer, $language, $region, $north, $south, $east, $west): \OpenAPI\Client\Model\Geocode200Response
 ```
 
 Geocode an address or place
@@ -47,7 +47,8 @@ $east = 3.4; // float | Viewport east bound (decimal degrees).
 $west = 3.4; // float | Viewport west bound (decimal degrees).
 
 try {
-    $apiInstance->geocode($application, $search, $referrer, $language, $region, $north, $south, $east, $west);
+    $result = $apiInstance->geocode($application, $search, $referrer, $language, $region, $north, $south, $east, $west);
+    print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling GeocodingApi->geocode: ', $e->getMessage(), PHP_EOL;
 }
@@ -69,7 +70,7 @@ try {
 
 ### Return type
 
-void (empty response body)
+[**\OpenAPI\Client\Model\Geocode200Response**](../Model/Geocode200Response.md)
 
 ### Authorization
 
@@ -78,7 +79,7 @@ void (empty response body)
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: Not defined
+- **Accept**: `application/json`
 
 [[Back to top]](#) [[Back to API list]](../../README.md#endpoints)
 [[Back to Model list]](../../README.md#models)

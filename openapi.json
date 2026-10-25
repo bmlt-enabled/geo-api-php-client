@@ -113,7 +113,201 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Geocoding result (cache or live)."
+                        "description": "Geocoding result (cache or live). The body is the Google Maps Geocoding response verbatim, with `type` and `request` added by this service. `results` is an empty array when `status` is `ZERO_RESULTS`.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "required": [
+                                        "results",
+                                        "status",
+                                        "type",
+                                        "request"
+                                    ],
+                                    "properties": {
+                                        "results": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "formatted_address": {
+                                                        "type": "string",
+                                                        "example": "New York, NY, USA"
+                                                    },
+                                                    "place_id": {
+                                                        "type": "string",
+                                                        "example": "ChIJOwg_06VPwokRYv534QaPC8g"
+                                                    },
+                                                    "types": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        },
+                                                        "example": [
+                                                            "locality",
+                                                            "political"
+                                                        ]
+                                                    },
+                                                    "address_components": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "long_name": {
+                                                                    "type": "string"
+                                                                },
+                                                                "short_name": {
+                                                                    "type": "string"
+                                                                },
+                                                                "types": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "type": "string"
+                                                                    }
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "geometry": {
+                                                        "properties": {
+                                                            "location": {
+                                                                "description": "Coordinates of the result. Read via results[0].geometry.location.",
+                                                                "properties": {
+                                                                    "lat": {
+                                                                        "type": "number",
+                                                                        "format": "float",
+                                                                        "example": 40.7127753
+                                                                    },
+                                                                    "lng": {
+                                                                        "type": "number",
+                                                                        "format": "float",
+                                                                        "example": -74.0059728
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "location_type": {
+                                                                "type": "string",
+                                                                "example": "APPROXIMATE"
+                                                            },
+                                                            "viewport": {
+                                                                "properties": {
+                                                                    "northeast": {
+                                                                        "properties": {
+                                                                            "lat": {
+                                                                                "type": "number",
+                                                                                "format": "float"
+                                                                            },
+                                                                            "lng": {
+                                                                                "type": "number",
+                                                                                "format": "float"
+                                                                            }
+                                                                        },
+                                                                        "type": "object"
+                                                                    },
+                                                                    "southwest": {
+                                                                        "properties": {
+                                                                            "lat": {
+                                                                                "type": "number",
+                                                                                "format": "float"
+                                                                            },
+                                                                            "lng": {
+                                                                                "type": "number",
+                                                                                "format": "float"
+                                                                            }
+                                                                        },
+                                                                        "type": "object"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "bounds": {
+                                                                "description": "Present only for results that cover an area.",
+                                                                "properties": {
+                                                                    "northeast": {
+                                                                        "properties": {
+                                                                            "lat": {
+                                                                                "type": "number",
+                                                                                "format": "float"
+                                                                            },
+                                                                            "lng": {
+                                                                                "type": "number",
+                                                                                "format": "float"
+                                                                            }
+                                                                        },
+                                                                        "type": "object"
+                                                                    },
+                                                                    "southwest": {
+                                                                        "properties": {
+                                                                            "lat": {
+                                                                                "type": "number",
+                                                                                "format": "float"
+                                                                            },
+                                                                            "lng": {
+                                                                                "type": "number",
+                                                                                "format": "float"
+                                                                            }
+                                                                        },
+                                                                        "type": "object"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "status": {
+                                            "description": "Google geocoding status.",
+                                            "type": "string",
+                                            "example": "OK",
+                                            "enum": [
+                                                "OK",
+                                                "ZERO_RESULTS"
+                                            ]
+                                        },
+                                        "type": {
+                                            "description": "Added by this service: whether the response came from the shared cache or a live Google call.",
+                                            "type": "string",
+                                            "example": "cache",
+                                            "enum": [
+                                                "cache",
+                                                "live"
+                                            ]
+                                        },
+                                        "request": {
+                                            "description": "Added by this service: an echo of the resolved request parameters.",
+                                            "properties": {
+                                                "search": {
+                                                    "type": "string",
+                                                    "example": "New York, NY"
+                                                },
+                                                "application": {
+                                                    "type": "string",
+                                                    "example": "my-app"
+                                                },
+                                                "language": {
+                                                    "type": "string",
+                                                    "example": "en"
+                                                },
+                                                "referrer": {
+                                                    "type": "string",
+                                                    "example": "https://example.com"
+                                                },
+                                                "region": {
+                                                    "type": "string",
+                                                    "example": null,
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "401": {
                         "description": "Missing or invalid API key."
