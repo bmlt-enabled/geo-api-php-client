@@ -2,7 +2,6 @@
 .php-cs-fixer.dist.php
 .travis.yml
 README.md
-composer.json
 docs/Api/GeocodingApi.md
 docs/Api/TimezoneApi.md
 docs/Model/Geocode200Response.md
