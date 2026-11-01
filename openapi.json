@@ -368,7 +368,42 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Timezone result (dstOffset, rawOffset, timeZoneId, timeZoneName)."
+                        "description": "Timezone result (dstOffset, rawOffset, timeZoneId, timeZoneName).",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "required": [
+                                        "dstOffset",
+                                        "rawOffset",
+                                        "timeZoneId",
+                                        "timeZoneName"
+                                    ],
+                                    "properties": {
+                                        "dstOffset": {
+                                            "description": "Daylight-saving offset from UTC, in seconds (0 when DST is not in effect).",
+                                            "type": "integer",
+                                            "example": 3600
+                                        },
+                                        "rawOffset": {
+                                            "description": "Base offset from UTC (excluding DST), in seconds.",
+                                            "type": "integer",
+                                            "example": -18000
+                                        },
+                                        "timeZoneId": {
+                                            "description": "IANA time zone identifier.",
+                                            "type": "string",
+                                            "example": "America/New_York"
+                                        },
+                                        "timeZoneName": {
+                                            "description": "Long-form, localized time zone name.",
+                                            "type": "string",
+                                            "example": "Eastern Daylight Time"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "401": {
                         "description": "Missing or invalid API key."

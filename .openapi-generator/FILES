@@ -13,6 +13,7 @@ docs/Model/Geocode200ResponseResultsInnerGeometryBounds.md
 docs/Model/Geocode200ResponseResultsInnerGeometryLocation.md
 docs/Model/Geocode200ResponseResultsInnerGeometryViewport.md
 docs/Model/Geocode200ResponseResultsInnerGeometryViewportNortheast.md
+docs/Model/Timezone200Response.md
 git_push.sh
 lib/Api/GeocodingApi.php
 lib/Api/TimezoneApi.php
@@ -30,5 +31,7 @@ lib/Model/Geocode200ResponseResultsInnerGeometryLocation.php
 lib/Model/Geocode200ResponseResultsInnerGeometryViewport.php
 lib/Model/Geocode200ResponseResultsInnerGeometryViewportNortheast.php
 lib/Model/ModelInterface.php
+lib/Model/Timezone200Response.php
 lib/ObjectSerializer.php
 phpunit.xml.dist
+test/Model/Timezone200ResponseTest.php

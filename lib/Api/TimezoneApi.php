@@ -30,11 +30,11 @@ namespace OpenAPI\Client\Api;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\MultipartStream;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\RequestOptions;
+use Psr\Http\Client\NetworkExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use OpenAPI\Client\ApiException;
@@ -137,11 +137,12 @@ class TimezoneApi
      *
      * @throws \OpenAPI\Client\ApiException on non-2xx response or if the response body is not in the expected format
      * @throws \InvalidArgumentException
-     * @return void
+     * @return \OpenAPI\Client\Model\Timezone200Response
      */
     public function timezone($address = null, $location = null, string $contentType = self::contentTypes['timezone'][0])
     {
-        $this->timezoneWithHttpInfo($address, $location, $contentType);
+        list($response) = $this->timezoneWithHttpInfo($address, $location, $contentType);
+        return $response;
     }
 
     /**
@@ -155,7 +156,7 @@ class TimezoneApi
      *
      * @throws \OpenAPI\Client\ApiException on non-2xx response or if the response body is not in the expected format
      * @throws \InvalidArgumentException
-     * @return array of null, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \OpenAPI\Client\Model\Timezone200Response, HTTP status code, HTTP response headers (array of strings)
      */
     public function timezoneWithHttpInfo($address = null, $location = null, string $contentType = self::contentTypes['timezone'][0])
     {
@@ -166,13 +167,14 @@ class TimezoneApi
             try {
                 $response = $this->client->send($request, $options);
             } catch (RequestException $e) {
+                $eResponse = $this->getExceptionResponse($e);
                 throw new ApiException(
                     "[{$e->getCode()}] {$e->getMessage()}",
                     (int) $e->getCode(),
-                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
-                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
+                    $eResponse ? $eResponse->getHeaders() : null,
+                    $eResponse ? (string) $eResponse->getBody() : null
                 );
-            } catch (ConnectException $e) {
+            } catch (NetworkExceptionInterface $e) {
                 throw new ApiException(
                     "[{$e->getCode()}] {$e->getMessage()}",
                     (int) $e->getCode(),
@@ -184,9 +186,45 @@ class TimezoneApi
             $statusCode = $response->getStatusCode();
 
 
-            return [null, $statusCode, $response->getHeaders()];
+            switch($statusCode) {
+                case 200:
+                    return $this->handleResponseWithDataType(
+                        '\OpenAPI\Client\Model\Timezone200Response',
+                        $request,
+                        $response,
+                    );
+            }
+
+            
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        (string) $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    (string) $response->getBody()
+                );
+            }
+
+            return $this->handleResponseWithDataType(
+                '\OpenAPI\Client\Model\Timezone200Response',
+                $request,
+                $response,
+            );
         } catch (ApiException $e) {
             switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\OpenAPI\Client\Model\Timezone200Response',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    throw $e;
             }
         
 
@@ -230,17 +268,38 @@ class TimezoneApi
      */
     public function timezoneAsyncWithHttpInfo($address = null, $location = null, string $contentType = self::contentTypes['timezone'][0])
     {
-        $returnType = '';
+        $returnType = '\OpenAPI\Client\Model\Timezone200Response';
         $request = $this->timezoneRequest($address, $location, $contentType);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
             ->then(
                 function ($response) use ($returnType) {
-                    return [null, $response->getStatusCode(), $response->getHeaders()];
+                    if ($returnType === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ($returnType !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
                 },
                 function ($exception) {
-                    $response = $exception->getResponse();
+                    $response = $this->getExceptionResponse($exception);
+                    if ($response === null) {
+                        throw new ApiException(
+                            "[{$exception->getCode()}] {$exception->getMessage()}",
+                            (int) $exception->getCode(),
+                            null,
+                            null
+                        );
+                    }
                     $statusCode = $response->getStatusCode();
                     throw new ApiException(
                         sprintf(
@@ -302,7 +361,7 @@ class TimezoneApi
 
 
         $headers = $this->headerSelector->selectHeaders(
-            [],
+            ['application/json', ],
             $contentType,
             $multipart
         );
@@ -387,6 +446,21 @@ class TimezoneApi
         }
 
         return $options;
+    }
+
+    /**
+     * Returns the response attached to a Guzzle exception, if there is one.
+     *
+     * Guzzle 7 exposes getResponse() on RequestException, while Guzzle 8 only
+     * exposes it on ResponseException and its subclasses.
+     *
+     * @param \Throwable $exception
+     *
+     * @return ResponseInterface|null
+     */
+    private function getExceptionResponse(\Throwable $exception): ?ResponseInterface
+    {
+        return method_exists($exception, 'getResponse') ? $exception->getResponse() : null;
     }
 
     private function handleResponseWithDataType(

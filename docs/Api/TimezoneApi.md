@@ -12,7 +12,7 @@ All URIs are relative to https://geo.aws.bmlt.app, except if the operation defin
 ## `timezone()`
 
 ```php
-timezone($address, $location)
+timezone($address, $location): \OpenAPI\Client\Model\Timezone200Response
 ```
 
 Look up the timezone for a location
@@ -40,7 +40,8 @@ $address = 'address_example'; // string | Address to geocode and look up. Mutual
 $location = 'location_example'; // string | Comma-separated latitude,longitude (e.g. 39.60,-119.68). Mutually exclusive with address.
 
 try {
-    $apiInstance->timezone($address, $location);
+    $result = $apiInstance->timezone($address, $location);
+    print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling TimezoneApi->timezone: ', $e->getMessage(), PHP_EOL;
 }
@@ -55,7 +56,7 @@ try {
 
 ### Return type
 
-void (empty response body)
+[**\OpenAPI\Client\Model\Timezone200Response**](../Model/Timezone200Response.md)
 
 ### Authorization
 
@@ -64,7 +65,7 @@ void (empty response body)
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: Not defined
+- **Accept**: `application/json`
 
 [[Back to top]](#) [[Back to API list]](../../README.md#endpoints)
 [[Back to Model list]](../../README.md#models)
